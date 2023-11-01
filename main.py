@@ -111,9 +111,8 @@ class PositionsEstimation:
     def _estimate_positions(self):
         positions, pos, angle = [self.initial_pos], self.initial_pos, self.initial_angle
         for linear_speed, angular_speed, t in zip(self.linear_speeds, list(self.angular_speeds)+[0], self.t_values[1:]):
-            x, y = pos.x, pos.y
-            x += linear_speed * math.cos(angle) * (delta_t := t - pos.t)
-            y += linear_speed * math.sin(angle) * delta_t
+            x = linear_speed * math.cos(angle) * (delta_t := t - pos.t) + pos.x
+            y = linear_speed * math.sin(angle) * delta_t + pos.y
             pos = Position(x, y, t)
             positions.append(pos)
             angle += angular_speed * delta_t
@@ -157,17 +156,15 @@ if __name__ == '__main__':
     args['linear_speeds'] = linear_speeds
     estimation4 = PositionsEstimation(**args, name='with angular speed error')
 
-    for estimation in (estimation1, estimation2, estimation3, estimation4):
+    for estimation in (estimation1, estimation2, estimation4, estimation3):
         error_title = f'Error {estimation.name}'
         error_sequence = estimation.errors(positions)
         print(f'{error_title:-^60}')
         print('Max error:', max(error_sequence))
-        print('Min error:', min(error_sequence))
         print('Average error:', sum(error_sequence) / len(error_sequence))
         print('-' * 60 + '\n')
         estimation.positions.plot(title=f'Estimated positions {estimation.name}')
         lines = tuple(f'{pos} error={error};' for pos, error in zip(estimation.positions, error_sequence))
         store_to_file(lines, f'estimated_positions_{'_'.join(estimation.name.split(' '))}.txt')
-        # This plots the errors against the time
-        # plot(tuple(p.t for p in positions), error_sequence, title=error_title, x_label='Error', y_label='Time')
+        plot(tuple(p.t for p in positions), error_sequence, title=error_title, x_label='Time', y_label='Error')
 
