@@ -6,14 +6,6 @@ from typing import Sequence
 from utils import store_to_file, introduce_gaussian_error, plot
 
 
-def r_from_angle(angle: float):
-    return [
-        [math.cos(angle), math.sin(angle), 0],
-        [-math.sin(angle), math.cos(angle), 0],
-        [0, 0, 1]
-    ]
-
-
 @dataclass(frozen=True, slots=True)
 class Position:
     x: float
@@ -145,26 +137,25 @@ if __name__ == '__main__':
         't_values': tuple(p.t for p in positions)
     }
 
-    estimation1 = PositionsEstimation(**args, name='with no artificial error')
+    estimation1 = PositionsEstimation(**args, name='Estimated positions with no artificial error')
 
     args['linear_speeds'] = introduce_gaussian_error(linear_speeds)
-    estimation2 = PositionsEstimation(**args, name='with linear speed error')
+    estimation2 = PositionsEstimation(**args, name='Estimated positions with Gaussian error in linear speed')
 
     args['angular_speeds'] = introduce_gaussian_error(angular_speeds)
-    estimation3 = PositionsEstimation(**args, name='with both errors')
+    estimation3 = PositionsEstimation(**args, name='Estimated positions with both Gaussian errors')
 
     args['linear_speeds'] = linear_speeds
-    estimation4 = PositionsEstimation(**args, name='with angular speed error')
+    estimation4 = PositionsEstimation(**args, name='Estimated positions with Gaussian error in angular speed')
 
     for estimation in (estimation1, estimation2, estimation4, estimation3):
-        error_title = f'Error {estimation.name}'
+        title = estimation.name
         error_sequence = estimation.errors(positions)
-        print(f'{error_title:-^60}')
+        print(f'{title:-^60}')
         print('Max error:', max(error_sequence))
         print('Average error:', sum(error_sequence) / len(error_sequence))
         print('-' * 60 + '\n')
-        estimation.positions.plot(title=f'Estimated positions {estimation.name}')
+        estimation.positions.plot(title=title)
         lines = tuple(f'{pos} error={error};' for pos, error in zip(estimation.positions, error_sequence))
-        store_to_file(lines, f'estimated_positions_{'_'.join(estimation.name.split(' '))}.txt')
-        plot(tuple(p.t for p in positions), error_sequence, title=error_title, x_label='Time', y_label='Error')
-
+        store_to_file(lines, f"{'_'.join(title.split(' ')).lower()}.txt")
+        plot(tuple(p.t for p in positions), error_sequence, title=title, x_label='Time', y_label='Error')
