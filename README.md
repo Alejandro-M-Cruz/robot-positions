@@ -5,9 +5,9 @@ Es necesario contar con una versíon reciente de Python (>=3.11) y con la librer
 \
 `pip install matplotlib` \
 \
-Una vez instalado lo necesario, el código puede ejecutarse en cualquier entorno que permita la visualización de gráficos, como Visual Studio o PyCharm, o con el siguiente comando:
+Una vez instalado lo necesario, el código puede ejecutarse en cualquier entorno que permita la visualización de gráficos, como Visual Studio o PyCharm, o con el siguiente comando:\
 \
-`python main.py`
+`python main.py`\
 \
 Al ejecutarlo, se crearán 5 ficheros. *linear_speeds.txt* y *angular_speeds.txt* corresponden a los valores de velocidad lineal y angular calculados
 a partir de las posiciones leídas del fichero *Path_SRA2223.txt*. Los tres restantes contienen las posiciones que conforman la trayectoria del robot reconstruida a partir de la posición y ángulo iniciales y las
